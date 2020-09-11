@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+   <head>
+      <!-- Required meta tags -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+      <!-- Bootstrap CSS -->
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+      <title>Corona Virus</title>
+   </head>
+   <body>
+      
+      <section class="title mt-4">
+         <div class="container text-center">
+            <h1>Covid Spread Data</h1>
+         </div>
+      </section>
+
+      <section class="content mt-5">
+         <div class="container">
+            <div class="row justify-content-center">
+               <div class="col-lg-5 col-md-5">
+                  <div class="input-group mb-3">
+                     <input type="text" class="form-control" class="keyword" id="keyword" placeholder="Insert country name...">
+                     <div class="input-group-append">
+                       <button class="btn btn-info" type="button" class="search" id="search">Search</button>
+                     </div>
+                   </div>
+               </div>
+            </div>
+
+            <div class="row mt-3">
+               <div class="col text-center" id="title">
+                  
+               </div>
+            </div>
+
+            <div class="row text-center mt-4" id="content"></div>
+         </div>
+      </section>
+
+      <script>
+         document.addEventListener("DOMContentLoaded", function() {
+
+            function getUrl(keyword) {
+               return `https://covid19.mathdro.id/api/countries/${keyword}`;
+            }
+
+            function getData(keyword) {
+               const url = getUrl(keyword);
+
+               return fetch(url)
+                        .then(response => response.json())
+                        .then(result => {
+                           return result
+                        });
+            }
+
+            // Uppercase first letter
+            function capitalizeFirstLetter(string) {
+               return string.charAt(0).toUpperCase() + string.slice(1);
+            }
+
+            function countryName() {
+               return `
+                  <h4>${capitalizeFirstLetter(document.getElementById('keyword').value)}</h4>
+               `;
+            }
+
+            function cardData(data) {
+               return `
+                  <div class="col-12 col-lg-3 offset-lg-2 col-md-4 col-sm-2">
+                     <div class="card text-white bg-primary mb-3" style="max-width: 13rem;">
+                        <div class="card-header"><h5>Confirmed</h5></div>
+                        <div class="card-body">
+                        <h5 class="card-title m-0 p-0"><h3>${data.confirmed.value}</h3></h5>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-12 col-lg-3 col-md-4 col-sm-2">
+                     <div class="card text-white bg-success mb-3" style="max-width: 13rem;">
+                        <div class="card-header"><h5>Recovered</h5></div>
+                        <div class="card-body">
+                        <h5 class="card-title m-0 p-0"><h3>${data.recovered.value}</h3></h5>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-12 col-lg-3 col-md-4 col-sm-2">
+                     <div class="card text-white bg-danger mb-3" style="max-width: 13rem;">
+                        <div class="card-header"><h5>Deaths</h5></div>
+                        <div class="card-body">
+                        <h5 class="card-title m-0 p-0"><h3>${data.deaths.value}</h3></h5>
+                        </div>
+                     </div>
+                  </div>
+               `;
+            }
+
+            function showData(data) {
+               const title = document.getElementById('title');
+               title.innerHTML = countryName();
+
+               const content = document.getElementById('content');
+               content.innerHTML = cardData(data);
+            }
+
+            // Button event   
+            const button = document.getElementById('search');
+            button.addEventListener('click', buttonClick);
+
+            // Async function
+            async function buttonClick() {
+               const data = await getData(document.getElementById('keyword').value);
+               showData(data);
+            }
+         });
+      </script>
+   </body>
+</html>

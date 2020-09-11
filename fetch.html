@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Fetch API</title>
+</head>
+<body>
+
+   <input type="text" id="keyword">
+   <button onclick="buttonClick()">Search Products</button>
+   <ul id="products"></ul>
+
+   <script>
+
+      function getProductsUrl(keyword) {
+         return `https://www.blibli.com/backend/search/products?searchTerm=${keyword}`;
+      }
+
+      function getProducts(keyword) {
+         // Code Fetch API Here!
+         const url = getProductsUrl(keyword);
+         
+         return fetch(url)
+            .then(response => {
+               if(response.status >= 200 && response.status <= 299) {
+                  return response.json(); //convert to json
+               } else {
+                  throw Error(response.statusText);
+                  alert("Ops terjadi suatu kesalahan");
+               }
+            })
+            .then( data => {
+               return data;
+            })
+            .catch(error => console.log(error));
+      }
+
+      function clearProducts() {
+         const productUl = document.getElementById("products");
+         productUl.textContent = "";
+      }
+
+      function displayProduct(product) {
+         const productLi = document.createElement("li");
+         productLi.textContent = product.name;
+
+         const productUl = document.getElementById("products");
+         productUl.appendChild(productLi);
+      }
+
+      function buttonClick() {
+         const promise = getProducts(document.getElementById("keyword").value);
+         // console.log(promise);
+         promise
+            .then( value => value.data.products) // get object of array
+            .then( products => {
+               clearProducts(); 
+               products.forEach( product => displayProduct(product));
+            })
+            .catch( error => alert(error.message))
+            .finally( () => console.log("Selesai memproses Promise"));
+      }
+   </script>
+</body>
+</html>
